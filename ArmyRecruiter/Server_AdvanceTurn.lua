@@ -1,4 +1,5 @@
 require('Utilities');
+require('DataConverter');
 
 function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNewOrder)
     if (order.proxyType == 'GameOrderCustom' and startsWith(order.Payload, 'BuyRecruiter_')) then  --look for the order that we inserted in Client_PresentCommercePurchaseUI
@@ -8,7 +9,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 		if (targetTerritoryStanding.OwnerPlayerID ~= order.PlayerID) then
 			return; --can only buy a priest onto a territory you control
 		end
-		
+
 		if (order.CostOpt == nil) then
 			return; --shouldn't ever happen, unless another mod interferes
 		end
@@ -46,28 +47,34 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 		builder.CanBeAirliftedToSelf = true;
 		builder.CanBeAirliftedToTeammate = true;
 		builder.IsVisibleToAllPlayers = false;
-	
+		if MODDATA == nil then 
+			MODDATA = dataToString({
+				UnitDescription = "This is a {{Name}}. It will recruite " .. Mod.Settings.NumArmies .. " armies at the end of every turn. \n\nYou can control up to " .. Mod.Settings.MaxRecruiters .. " {{Name}}s. To buy a {{Name}}, you can go to the purchase menu. This is the same place where you can buy cities. A {{Name}} will cost " .. Mod.Settings.CostToBuyRecruiter .. " gold."
+			});
+		end
+		builder.ModData = MODDATA;
+
 		local terrMod = WL.TerritoryModification.Create(targetTerritoryID);
 		terrMod.AddSpecialUnits = {builder.Build()};
-		
+
 		addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, 'Purchased a Recruiter', {}, {terrMod}));
 	end
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-	
-for terrID, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 
-local numRecruiters = NumRecruitersIn(territory.NumArmies);
-		
-if numRecruiters > 0 then
-    local terrMod = WL.TerritoryModification.Create(terrID);
-    terrMod.SetArmiesTo = (Mod.Settings.NumArmies * numRecruiters) + territory.NumArmies.NumArmies;
-    addNewOrder(WL.GameOrderEvent.Create(territory.OwnerPlayerID, "New armies recruited", {}, {terrMod}));
-end
-			
-end 	
-	
+	for terrID, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
+
+		local numRecruiters = NumRecruitersIn(territory.NumArmies);
+
+		if numRecruiters > 0 then
+			local terrMod = WL.TerritoryModification.Create(terrID);
+			terrMod.AddArmies = (Mod.Settings.NumArmies * numRecruiters);
+			addNewOrder(WL.GameOrderEvent.Create(territory.OwnerPlayerID, "New armies recruited", {}, {terrMod}));
+		end
+
+	end
+
 end
 
 function NumRecruitersIn(armies)
@@ -79,7 +86,7 @@ function NumRecruitersIn(armies)
 	end
 	return ret;
 end
-	
+
 function hasNoRecruiter(armies)
     for _, sp in pairs(armies.SpecialUnits) do
         if (sp.proxyType == 'CustomSpecialUnit' and sp.Name == "Recruiter") then
