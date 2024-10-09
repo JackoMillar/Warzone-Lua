@@ -85,7 +85,7 @@ if (game.ServerGame.LatestTurnStanding.Territories[connID].OwnerPlayerID == WL.P
 
     		local rand = math.random(#arr);
     		local randomNeutralTerr = arr[rand]; --picks random neutral then gives it too player
-    		if randomNeutralTerr == nill then break; end
+    		if randomNeutralTerr == nil then break; end
     		if bordersOpponent(game, t, p, terrID) then
     		 local terrMod = WL.TerritoryModification.Create(randomNeutralTerr);   
      		 terrMod.SetOwnerOpt = p;
