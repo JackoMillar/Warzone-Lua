@@ -1,4 +1,5 @@
 require('Utilities');
+require('AddOrderInOrderlist');
 
 function Client_PresentCommercePurchaseUI(rootParent, game, close)
 	Close1 = close;
@@ -93,7 +94,8 @@ function CompletePurchaseClicked()
 	local payload = 'BuyRecruiter_' .. SelectedTerritory.ID;
 
 	local orders = Game.Orders;
-	table.insert(orders, WL.GameOrderCustom.Create(Game.Us.ID, msg, payload,  { [WL.ResourceType.Gold] = Mod.Settings.CostToBuyRecruiter } ));
+	local order = WL.GameOrderCustom.Create(Game.Us.ID, msg, payload,  { [WL.ResourceType.Gold] = Mod.Settings.CostToBuyRecruiter }, WL.TurnPhase.Deploys + 1);
+	addOrderInOrderlist(orders, order);
 	Game.Orders = orders;
 
 	Close2();
