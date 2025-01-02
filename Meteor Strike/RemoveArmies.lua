@@ -1,6 +1,6 @@
 --  This function will return a WL.TerritoryModification and removes armies from the given territory, just like it was attacked
 --	This function will turn the territory neutral when it has no armies or special units left
---	
+--
 --
 --  Inputs:
 --      game            [Game]          The game object you get passed in Server_AdvanceTurn
@@ -8,7 +8,7 @@
 --      damage          [Integer]       The amount of damage the territory takes (pass a 0 to remove all armies and units and turn the territory neutral)
 --
 --	Output:
---		mod				[WL.TerritoryModification]		
+--		mod				[WL.TerritoryModification]
 
 function killArmiesOrTurnNeutral(game, terr, damage)
 	local mod = WL.TerritoryModification.Create(terr.ID);
@@ -120,8 +120,8 @@ function getHealth(sp)
 			return sp.Health;
 		elseif sp.proxyType == "Boss2" or sp.proxyType == "Boss3" then
 			return sp.Power;
-		else 
-			return 0; 
+		else
+			return 0;
 		end
 	end
 end
