@@ -3,7 +3,7 @@ require('Utilities');
 function Client_PresentCommercePurchaseUI(rootParent, game, close)
 	Close1 = close;
 	Game = game;
-	
+
 	local vert = UI.CreateVerticalLayoutGroup(rootParent);
 
 	UI.CreateLabel(vert).SetText("each Worker is as powerful as 3 army but cost " .. Mod.Settings.CostToBuyWorker .. " gold to purchase.  You may have up to " .. Mod.Settings.MaxWorkers .. ". If a Worker survives at the end of the turn it will construct " .. Mod.Settings.NumCities .." cities on that territory");
@@ -25,7 +25,7 @@ function PurchaseClicked()
 	--We check on the client for player convenience. Another check happens on the server, so even if someone hacks their client and removes this check they still won't be able to go over the max.
 
 	local playerID = Game.Us.ID;
-	
+
 	local numWorkersAlreadyHave = 0;
 	for _,ts in pairs(Game.LatestStanding.Territories) do
 		if (ts.OwnerPlayerID == playerID) then
@@ -44,7 +44,7 @@ function PurchaseClicked()
 		return;
 	end
 
-	Game.CreateDialog(PresentBuyWorkersDialog); 
+	Game.CreateDialog(PresentBuyWorkersDialog);
 	Close1();
 end
 
