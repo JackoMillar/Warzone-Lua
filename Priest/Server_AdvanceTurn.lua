@@ -1,7 +1,8 @@
 require('Utilities');
 
 function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNewOrder)
-    if (order.proxyType == 'GameOrderCustom' and startsWith(order.Payload, 'BuyPriest_')) then  --look for the order that we inserted in Client_PresentCommercePurchaseUI
+	if (order.proxyType == 'GameOrderCustom' and startsWith(order.Payload, 'BuyPriest_')) then
+		--look for the order that we inserted in Client_PresentCommercePurchaseUI
 		--in Client_PresentMenuUI, we stuck the territory ID after BuyPriest_.  Break it out and parse it to a number.
 		local targetTerritoryID = tonumber(string.sub(order.Payload, 11));
 		print(string.sub(order.Payload, 11));
@@ -9,7 +10,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 		if (targetTerritoryStanding.OwnerPlayerID ~= order.PlayerID) then
 			return; --can only buy a priest onto a territory you control
 		end
-		
+
 		if (order.CostOpt == nil) then
 			return; --shouldn't ever happen, unless another mod interferes
 		end
@@ -49,41 +50,42 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 		builder.CanBeAirliftedToSelf = true;
 		builder.CanBeAirliftedToTeammate = true;
 		builder.IsVisibleToAllPlayers = false;
-	
+
 		local terrMod = WL.TerritoryModification.Create(targetTerritoryID);
 		terrMod.AddSpecialUnits = {builder.Build()};
-		
+
 		addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, 'Purchased a priest', {}, {terrMod}));
 	end
-     if order.proxyType == "GameOrderAttackTransfer" then
-	if Mod.Settings.Offensive then
-          if orderResult.IsAttack and hasNoPriest(game.ServerGame.LatestTurnStanding.Territories[order.From].NumArmies) then
-		local fromTerr = game.ServerGame.LatestTurnStanding.Territories[order.From]; 
-			local terrMod = WL.TerritoryModification.Create(order.From);
-			local p;
-			terrMod.AddArmies = round(orderResult.AttackingArmiesKilled.NumArmies * (Mod.Settings.Percentage / 100));
-			 p = fromTerr.OwnerPlayerID;
-			if terrMod.AddArmies ~= nil and terrMod.AddArmies > 0 then
-                    		local event = WL.GameOrderEvent.Create(p, "priest converted " .. terrMod.AddArmies .. " armies", {}, {terrMod});
-                    		addNewOrder(event, true);
-                	end
-	end 
-       end
-	if Mod.Settings.Defensive then	
-	 if orderResult.IsAttack and hasNoPriest(game.ServerGame.LatestTurnStanding.Territories[order.To].NumArmies) then
-	     if(orderResult.IsSuccessful == false)then
-		local toTerr = game.ServerGame.LatestTurnStanding.Territories[order.To]; 
-			local terrMod = WL.TerritoryModification.Create(order.To);
-			local p;
-			terrMod.AddArmies = round(orderResult.AttackingArmiesKilled.NumArmies * (Mod.Settings.Percentage / 100));
-			 p = toTerr.OwnerPlayerID;
-			if terrMod.AddArmies ~= nil and terrMod.AddArmies > 0 then
-                    		local event = WL.GameOrderEvent.Create(p, "priest converted " .. terrMod.AddArmies .. " of the attacking armies", {}, {terrMod});
-                    		addNewOrder(event, true);
-                	end
-	end end
-       end
-     end
+	if order.proxyType == "GameOrderAttackTransfer" then
+		if Mod.Settings.Offensive then
+			if orderResult.IsAttack and hasNoPriest(game.ServerGame.LatestTurnStanding.Territories[order.From].NumArmies) then
+				local fromTerr = game.ServerGame.LatestTurnStanding.Territories[order.From];
+				local terrMod = WL.TerritoryModification.Create(order.From);
+				local p;
+				terrMod.AddArmies = round(orderResult.AttackingArmiesKilled.NumArmies * (Mod.Settings.Percentage / 100));
+				p = fromTerr.OwnerPlayerID;
+				if terrMod.AddArmies ~= nil and terrMod.AddArmies > 0 then
+					local event = WL.GameOrderEvent.Create(p, "priest converted " .. terrMod.AddArmies .. " armies", {}, {terrMod});
+					addNewOrder(event, true);
+				end
+			end
+		end
+		if Mod.Settings.Defensive then
+			if orderResult.IsAttack and hasNoPriest(game.ServerGame.LatestTurnStanding.Territories[order.To].NumArmies) then
+				if(orderResult.IsSuccessful == false)then
+					local toTerr = game.ServerGame.LatestTurnStanding.Territories[order.To];
+					local terrMod = WL.TerritoryModification.Create(order.To);
+					local p;
+					terrMod.AddArmies = round(orderResult.AttackingArmiesKilled.NumArmies * (Mod.Settings.Percentage / 100));
+					p = toTerr.OwnerPlayerID;
+					if terrMod.AddArmies ~= nil and terrMod.AddArmies > 0 then
+						local event = WL.GameOrderEvent.Create(p, "priest converted " .. terrMod.AddArmies .. " of the attacking armies", {}, {terrMod});
+						addNewOrder(event, true);
+					end
+				end
+			end
+		end
+	end
 end
 
 function NumPriestsIn(armies)
@@ -97,14 +99,14 @@ function NumPriestsIn(armies)
 end
 
 function hasNoPriest(armies)
-    for _, sp in pairs(armies.SpecialUnits) do
-          if (sp.proxyType == "CustomSpecialUnit" and sp.Name == "Priest") then
-            return true;
-        end
-    end
-    return false;
+	for _, sp in pairs(armies.SpecialUnits) do
+		if (sp.proxyType == "CustomSpecialUnit" and sp.Name == "Priest") then
+			return true;
+		end
+	end
+	return false;
 end
 
 function round(n)
-    return math.floor(n + 0.5);
+	return math.floor(n + 0.5);
 end

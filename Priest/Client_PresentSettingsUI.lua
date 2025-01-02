@@ -5,7 +5,7 @@ function Client_PresentSettingsUI(rootParent)
 	UI.CreateLabel(vert).SetText('power of a priest unit: ' .. Mod.Settings.PriestPower);
 	UI.CreateLabel(vert).SetText('Max priests: ' .. Mod.Settings.MaxPriests);
 	UI.CreateLabel(vert).SetText('conversion percentage: ' .. Mod.Settings.Percentage .. '%');
-	
+
 	if Mod.Settings.Offensive == true then
 		UI.CreateLabel(vert).SetText('Priest converts when he attacks');
 	end
