@@ -75,6 +75,6 @@ function DestroyWindow(win)
 	end
 end
 
-function startsWith(str, sub)	
-return string.sub(str, 1, string.len(sub)) == sub;
+function startsWith(str, sub)
+	return string.sub(str, 1, string.len(sub)) == sub;
 end
