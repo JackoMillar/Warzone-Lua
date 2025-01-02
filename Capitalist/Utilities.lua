@@ -29,7 +29,6 @@ function map(array, func)
 	return new_array
 end
 
-
 function filter(array, func)
 	local new_array = {}
 	local i = 1;
