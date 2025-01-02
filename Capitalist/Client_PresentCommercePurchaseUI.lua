@@ -3,7 +3,7 @@ require('Utilities')
 function Client_PresentCommercePurchaseUI(rootParent, game, close)
 	Close1 = close;
 	Game = game;
-	
+
 	local vert = UI.CreateVerticalLayoutGroup(rootParent);
 
 	UI.CreateLabel(vert).SetText("each Capitalist is as powerful as 1 army but cost " .. Mod.Settings.CostToBuyCapitalist .. " gold to purchase.  You may have up to " .. Mod.Settings.MaxCapitalists .. " Capitalists at a time. When a Capitalist is killed by the enemy it will take away " .. Mod.Settings.Percentage .. "% of the enemy income.");
@@ -25,7 +25,7 @@ function PurchaseClicked()
 	--We check on the client for player convenience. Another check happens on the server, so even if someone hacks their client and removes this check they still won't be able to go over the max.
 
 	local playerID = Game.Us.ID;
-	
+
 	local numCapitalistsAlreadyHave = 0;
 	for _,ts in pairs(Game.LatestStanding.Territories) do
 		if (ts.OwnerPlayerID == playerID) then
@@ -44,7 +44,7 @@ function PurchaseClicked()
 		return;
 	end
 
-	Game.CreateDialog(PresentBuyCapitalistsDialog); 
+	Game.CreateDialog(PresentBuyCapitalistsDialog);
 	Close1();
 end
 
