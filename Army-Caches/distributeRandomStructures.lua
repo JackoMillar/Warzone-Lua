@@ -20,24 +20,22 @@ function distributeRandomStructures(standing, structure, amount, payload)
 	local onlyPlaceOnNeutrals = true;
 	local allowMultipleStructures = false;
 
-	if not (type(payload) == type({})) then
-		return;
-	end
+	if type(payload) == type({}) then
+		if payload.maxPercentage then
+			maxPercentage = payload.maxPercentage;
+		end
 
-	if payload.maxPercentage then
-		maxPercentage = payload.maxPercentage;
-	end
+		if payload.numberOfStructures then
+			numberOfStructures = payload.numberOfStructures;
+		end
 
-	if payload.numberOfStructures then
-		numberOfStructures = payload.numberOfStructures;
-	end
+		if payload.onlyPlaceOnNeutrals then
+			onlyPlaceOnNeutrals = payload.onlyPlaceOnNeutrals;
+		end
 
-	if payload.onlyPlaceOnNeutrals then
-		onlyPlaceOnNeutrals = payload.onlyPlaceOnNeutrals;
-	end
-
-	if payload.allowMultipleStructures then
-		allowMultipleStructures = payload.allowMultipleStructures;
+		if payload.allowMultipleStructures then
+			allowMultipleStructures = payload.allowMultipleStructures;
+		end
 	end
 
 	local terrArray = {};

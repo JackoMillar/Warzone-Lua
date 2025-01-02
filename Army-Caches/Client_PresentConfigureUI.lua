@@ -1,25 +1,13 @@
 function Client_PresentConfigureUI(rootParent, rootParent2, rootParent3)
 	print(1);
 
-	local initialACaches = Mod.Settings.NumOfACaches;
-	local GainedArmies = Mod.Settings.Armies;
+	local initialACaches = Mod.Settings.NumOfACaches or 2;
+	local GainedArmies = Mod.Settings.Armies or 5;
 	local FixedArmies = Mod.Settings.FixedArmies;
-	local difference = Mod.Settings.Luck;
-
-	if not initialACaches then
-		initialACaches = 2;
-	end
-
-	if not GainedArmies then
-		GainedArmies = 5;
-	end
+	local difference = Mod.Settings.Luck or 5;
 
 	if FixedArmies == nil then
 		FixedArmies = true;
-	end
-
-	if not difference then
-		difference = 5;
 	end
 
 	local vert = UI.CreateVerticalLayoutGroup(rootParent);

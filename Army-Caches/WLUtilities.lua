@@ -1,4 +1,4 @@
---This file contains utility functions that are WarLight-specific.
+-- This file contains utility functions that are WarLight-specific.
 
 function Dump(obj)
 	if obj.proxyType ~= nil then

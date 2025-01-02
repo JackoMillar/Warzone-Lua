@@ -25,7 +25,7 @@ function map(array, func)
 	local new_array = {};
 	local i = 1;
 
-	for _,v in pairs(array) do
+	for _, v in pairs(array) do
 		new_array[i] = func(v);
 		i = i + 1;
 	end
