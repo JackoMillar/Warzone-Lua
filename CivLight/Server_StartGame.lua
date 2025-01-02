@@ -1,10 +1,10 @@
 require('UI');
-
 require('distributeRandomStructures');
 require('distributeRandomStructures2');
 
 function Server_StartGame(game, standing)
 	local count = 0;
+
 	for cardID, _ in pairs(game.Settings.Cards) do
 		count = count + 1;
 	end
@@ -18,9 +18,10 @@ function Server_StartGame(game, standing)
 end
 
 function getRandomTerritory(territoryArray)
-	local index = math.random(#territoryArray)
-	local territoryID = territoryArray[index].ID
-	table.remove(territoryArray, index)
+	local index = math.random(#territoryArray);
+	local territoryID = territoryArray[index].ID;
 
-	return territoryID
+	table.remove(territoryArray, index);
+
+	return territoryID;
 end

@@ -30,15 +30,19 @@ function distributeRandomStructures(standing, structure, amount, payload)
 		if payload.maxPercentage ~= nil then
 			maxPercentage = payload.maxPercentage;
 		end
+
 		if payload.numberOfStructures ~= nil then
 			numberOfStructures = payload.numberOfStructures;
 		end
+
 		if payload.onlyPlaceOnNeutrals ~= nil then
 			onlyPlaceOnNeutrals = payload.onlyPlaceOnNeutrals;
 		end
+
 		if payload.allowMultipleStructures ~= nil then
 			allowMultipleStructures = payload.allowMultipleStructures;
 		end
+
 		if payload.allowConnectedTerrs ~= nil then
 			allowConnectedTerrs = payload.allowConnectedTerrs;
 			mapDetails = payload.mapDetails;
@@ -63,7 +67,9 @@ function distributeRandomStructures(standing, structure, amount, payload)
 	end
 
 	for i = 1, VillageAmount do
-		if #terrArray < 1 then break; end
+		if #terrArray < 1 then
+			break;
+		end
 
 		local rand = math.random(#terrArray);
 		local terr = terrArray[rand];
@@ -81,7 +87,9 @@ function distributeRandomStructures(standing, structure, amount, payload)
 end
 
 function removeConnectedTerrs_POI(map, terrs, terr)
-	if terr == nil then return terrs; end
+	if not terr then
+		return terrs;
+	end
 
 	for i, _ in pairs(map.Territories[terr].ConnectedTo) do
 		if getKeyFromValue_POI(terrs, i) ~= nil then
@@ -93,7 +101,9 @@ function removeConnectedTerrs_POI(map, terrs, terr)
 end
 
 function getTableLength_POI(t)
-	if type(t) ~= type({}) then return 0; end
+	if type(t) ~= type({}) then
+		return 0;
+	end
 
 	local c = 0;
 
@@ -110,6 +120,4 @@ function getKeyFromValue_POI(t, v)
 			return i;
 		end
 	end
-
-	return nil;
 end

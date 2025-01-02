@@ -7,7 +7,7 @@ function Client_SaveConfigureUI(alert)
 		attackNeutralInputField == nil
 	) then
 		-- is this alert actually needed? settings seem to use a default anyway
-		alert("You must open and close every button in CivLight once before you can save settings (sorry).");
+		alert('You must open and close every button in CivLight once before you can save settings (sorry).');
 	end
 
 	if ExpansionInputField == nil then

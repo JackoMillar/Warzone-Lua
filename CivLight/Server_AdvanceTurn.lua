@@ -1,50 +1,8 @@
 require('UI');
 
 function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNewOrder)
-	if order.proxyType == "GameOrderAttackTransfer" then
-		if orderResult.IsAttack and orderResult.IsSuccessful then
-			local attackedTerr = game.ServerGame.LatestTurnStanding.Territories[order.To];
-			local attackerTerr = game.ServerGame.LatestTurnStanding.Territories[order.From];
-
-			if attackedTerr.Structures ~= nil then
-				if attackedTerr.Structures[WL.StructureType.MercenaryCamp] ~= nil then -- there is a mercenary camp on the territory that was successfully attacked -- so now you can do what you want :p
-					Village(game, addNewOrder, order.To, order.PlayerID)
-				end
-			end
-
-			if (Mod.Settings.AttackNeutral == false) and (attackedTerr.OwnerPlayerID == WL.PlayerID.Neutral) then
-				local terrModTo = WL.TerritoryModification.Create(order.To);
-				terrModTo.SetOwnerOpt = WL.PlayerID.Neutral;
-
-				print(attackedTerr.NumArmies.NumArmies);
-				print(orderResult.AttackingArmiesKilled.NumArmies);
-
-				terrModTo.SetArmiesTo = (attackedTerr.NumArmies.NumArmies - orderResult.DefendingArmiesKilled.NumArmies);
-				local terrModfrom = WL.TerritoryModification.Create(order.From);
-				terrModfrom.SetArmiesTo = (attackerTerr.NumArmies.NumArmies - orderResult.AttackingArmiesKilled.NumArmies);
-				addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, "calculating damage done", {}, {terrModTo}));
-				addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, "returning damaged troops",{}, {terrModfrom}), true);
-			end
-		end
-	end
-
-	if order.proxyType == "GameOrderAttackTransfer" then
-		if orderResult.IsSuccessful then
-			local TransferredTerr = game.ServerGame.LatestTurnStanding.Territories[order.To];
-			if TransferredTerr.Structures ~= nil then
-				if TransferredTerr.Structures[WL.StructureType.ArmyCache] ~= nil then
-					-- there is a army cache on the territory that was successfully attacked
-					-- so now you can do what you want :p
-
-					ArmyCache(game, addNewOrder, order.To, order.PlayerID);
-				end
-
-				if TransferredTerr.Structures[WL.StructureType.ResourceCache] ~= nil then
-					ResourceCache(game, addNewOrder, order.To, order.PlayerID);
-				end
-			end
-		end
-	end
+	checkForMercenaryCampCaptured(game, order, orderResult, skipThisOrder, addNewOrder);
+	checkForArmyCacheCaptured(game, order, orderResult, skipThisOrder, addNewOrder);
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
@@ -55,168 +13,148 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 
 	local list = {};
 
-	if (Mod.Settings.OnlyBaseNeutrals == nil) then
-		Mod.Settings.OnlyBaseNeutrals = false;
-	end
-
 	for playerID, _ in pairs(game.Game.PlayingPlayers) do
 		t[playerID] = {};
 		pTable[playerID] = {};
 	end
 
-	if (Mod.Settings.OnlyBaseNeutrals == false) then
-		for terrID, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
-			if (game.ServerGame.LatestTurnStanding.Territories[terrID].IsNeutral == false) then
-				for connID, _ in pairs(game.Map.Territories[terrID].ConnectedTo) do
-					if (game.ServerGame.LatestTurnStanding.Territories[connID].OwnerPlayerID == WL.PlayerID.Neutral) then
-						table.insert(t[game.ServerGame.LatestTurnStanding.Territories[terrID].OwnerPlayerID], connID);
-					end
+	local onlyBaseNeutrals = Mod.Settings.OnlyBaseNeutrals or false;
+
+	for terrID, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
+		if not territoriy.IsNeutral then
+			for connID, _ in pairs(territory.ConnectedTo) do
+				local connectedTerr =  game.ServerGame.LatestTurnStanding.Territories[connID];
+
+				if (
+					connectedTerr.OwnerPlayerID == WL.PlayerID.Neutral and
+					((onlyBaseNeutrals and connectedTerr.NumArmies.NumArmies <= nonDistArmies) or true)
+				) then
+					table.insert(t[connectedTerr.OwnerPlayerID], connID);
 				end
 			end
-		end
-
-		for p, arr in pairs(t) do
-			for times = 1, math.min(Mod.Settings.NumToConvert, #arr) do
-				local rand = math.random(#arr);
-				local randomNeutralTerr = arr[rand]; --picks random neutral then gives it too player
-
-				if randomNeutralTerr == nil then break; end
-
-				if bordersOpponent(game, t, p, terrID) then
-					local terrMod = WL.TerritoryModification.Create(randomNeutralTerr);
-					terrMod.SetOwnerOpt = p;
-					terrMod.SetArmiesTo = Mod.Settings.SetArmiesTo; -- you can leave this out, if this field is nill it will not change anything to the army count
-					table.insert(list, terrMod);
-
-					structs = game.ServerGame.LatestTurnStanding.Territories[randomNeutralTerr].Structures;
-					local terr_has_merc_camp = false;
-					--local terr_has_army_cache = false;
-
-					if structs ~= nil then
-						for key,val in pairs(structs) do
-							if key == WL.StructureType.MercenaryCamp then
-								terr_has_merc_camp = true
-							end
-							--if key == WL.StructureType.ArmyCache then
-								--terr_has_army_cache = true
-							--end
-						end
-
-						if terr_has_merc_camp then
-							playerID = p;
-							Village(game, addNewOrder, randomNeutralTerr, playerID);
-						end
-						--if terr_has_army_cache then
-							--playerID = p;
-							--ArmyCache(game, addNewOrder, randomNeutralTerr, playerID);
-						--end
-					end
-				end
-
-				--addNewOrder(WL.GameOrderEvent.Create(p,"new territory",{},{terrMod}), true));
-
-				table.remove(arr, rand);
-			end
-
-			table.insert(pTable[p], WL.GameOrderEvent.Create(p,"new territory",{}, list));
-			list = {};
-		end
-
-		local i = 1;
-		local addedOrders = true;
-
-		while addedOrders do
-			addedOrders = false;
-
-			for p, _  in pairs(game.Game.PlayingPlayers) do
-				if pTable[p][i] ~= nil then
-					addedOrders = true;
-					addNewOrder(pTable[p][i]);
-				end
-			end
-
-			i = i + 1;
 		end
 	end
 
-	if (Mod.Settings.OnlyBaseNeutrals == true) then
-		for terrID, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
-			if (game.ServerGame.LatestTurnStanding.Territories[terrID].IsNeutral == false) then
-				for connID, _ in pairs(game.Map.Territories[terrID].ConnectedTo) do
-					if (
-						(game.ServerGame.LatestTurnStanding.Territories[connID].OwnerPlayerID == WL.PlayerID.Neutral) and
-						(game.ServerGame.LatestTurnStanding.Territories[connID].NumArmies.NumArmies <= nonDistArmies)
-					) then
-						table.insert(t[game.ServerGame.LatestTurnStanding.Territories[terrID].OwnerPlayerID], connID);
-					end
-				end
-			end
-		end
+	for p, arr in pairs(t) do
+		for times = 1, math.min(Mod.Settings.NumToConvert, #arr) do
+			local rand = math.random(#arr);
+			local randomNeutralTerrId = arr[rand]; -- picks random neutral then gives it too player
 
-		for p, arr in pairs(t) do
-			for times = 1, math.min(Mod.Settings.NumToConvert, #arr) do
-				local rand = math.random(#arr);
-				local randomNeutralTerr = arr[rand]; --picks random neutral then gives it too player
-
-				if randomNeutralTerr == nil then break; end
-
-				if bordersOpponent(game, t, p, terrID) then
-					local terrMod = WL.TerritoryModification.Create(randomNeutralTerr);
-
-					terrMod.SetOwnerOpt = p;
-					terrMod.SetArmiesTo = Mod.Settings.SetArmiesTo; -- you can leave this out, if this field is nill it will not change anything to the army count
-					table.insert(list, terrMod);
-
-					structs = game.ServerGame.LatestTurnStanding.Territories[randomNeutralTerr].Structures;
-					local terr_has_merc_camp = false;
-					--local terr_has_army_cache = false;
-
-					if structs ~= nil then
-						for key,val in pairs(structs) do
-							if key == WL.StructureType.MercenaryCamp then
-								terr_has_merc_camp = true
-							end
-							--if key == WL.StructureType.ArmyCache then
-								--terr_has_army_cache = true
-							--end
-						end
-					end
-
-					if terr_has_merc_camp then
-						playerID = p;
-						Village(game, addNewOrder, randomNeutralTerr, playerID);
-					end
-					--if terr_has_army_cache then
-						--playerID = p;
-						--ArmyCache(game, addNewOrder, randomNeutralTerr, playerID);
-					--end
-				end
-
-				--addNewOrder(WL.GameOrderEvent.Create(p,"new territory",{},{terrMod}), true));
-
-				table.remove(arr, rand);
+			if not randomNeutralTerrId then
+				break;
 			end
 
-			table.insert(pTable[p], WL.GameOrderEvent.Create(p,"new territory",{}, list));
-			list = {};
-		end
+			if bordersOpponent(game, t, p, terrID) then
+				local terrMod = WL.TerritoryModification.Create(randomNeutralTerrId);
 
-		local i = 1;
-		local addedOrders = true;
+				terrMod.SetOwnerOpt = p;
+				terrMod.SetArmiesTo = Mod.Settings.SetArmiesTo; -- you can leave this out, if this field is nil it will not change anything to the army count
+				table.insert(list, terrMod);
 
-		while addedOrders do
-			addedOrders = false;
+				local randomNeutralTerr = game.ServerGame.LatestTurnStanding.Territories[randomNeutralTerr];
+				local terr_has_merc_camp = territoryHasStructure(randomNeutralTerr, WL.StructureType.MercenaryCamp);
+				--local terr_has_army_cache = territoryHasStructure(randomNeutralTerr, WL.StructureType.ArmyCache);
 
-			for p, _  in pairs(game.Game.PlayingPlayers) do
-				if pTable[p][i] ~= nil then
-					addedOrders = true;
-					addNewOrder(pTable[p][i]);
+				if terr_has_merc_camp then
+					playerID = p;
+					Village(game, addNewOrder, randomNeutralTerrId, playerID);
 				end
+
+				--if terr_has_army_cache then
+					--playerID = p;
+					--ArmyCache(game, addNewOrder, randomNeutralTerrId, playerID);
+				--end
 			end
 
-			i = i + 1;
+			--addNewOrder(WL.GameOrderEvent.Create(p, 'New territory', {}, {terrMod}), true));
+
+			table.remove(arr, rand);
 		end
+
+		table.insert(pTable[p], WL.GameOrderEvent.Create(p, 'New territory', {}, list));
+		list = {};
 	end
+
+	local i = 1;
+	local addedOrders = true;
+
+	while addedOrders do
+		addedOrders = false;
+
+		for p, _  in pairs(game.Game.PlayingPlayers) do
+			if pTable[p][i] ~= nil then
+				addedOrders = true;
+				addNewOrder(pTable[p][i]);
+			end
+		end
+
+		i = i + 1;
+	end
+end
+
+function checkForMercenaryCampCaptured(game, order, orderResult, addNewOrder, skipThisOrder)
+	if not (order.proxyType == 'GameOrderAttackTransfer') then
+		return;
+	end
+
+	if not (orderResult.IsAttack and orderResult.IsSuccessful) then
+		return;
+	end
+
+	local attackedTerr = game.ServerGame.LatestTurnStanding.Territories[order.To];
+	local attackerTerr = game.ServerGame.LatestTurnStanding.Territories[order.From];
+
+	if territoryHasStructure(attackedTerr, WL.StructureType.MercenaryCamp) then
+		-- there is a mercenary camp on the territory that was successfully attacked
+		-- so now you can do what you want :p
+
+		Village(game, addNewOrder, order.To, order.PlayerID);
+	end
+
+	if not (not Mod.Settings.AttackNeutral and (attackedTerr.OwnerPlayerID == WL.PlayerID.Neutral)) then
+		return;
+	end
+
+	print(attackedTerr.NumArmies.NumArmies);
+	print(orderResult.AttackingArmiesKilled.NumArmies);
+
+	local terrModTo = WL.TerritoryModification.Create(order.To);
+
+	terrModTo.SetOwnerOpt = WL.PlayerID.Neutral;
+	terrModTo.SetArmiesTo = (attackedTerr.NumArmies.NumArmies - orderResult.DefendingArmiesKilled.NumArmies);
+
+	addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, 'Calculating damage done', {}, {terrModTo}));
+
+	local terrModfrom = WL.TerritoryModification.Create(order.From);
+
+	terrModfrom.SetArmiesTo = attackerTerr.NumArmies.NumArmies - orderResult.AttackingArmiesKilled.NumArmies;
+
+	addNewOrder(WL.GameOrderEvent.Create(order.PlayerID, 'Returning damaged troops', {}, {terrModfrom}), true);
+end
+
+function checkForArmyCacheCaptured(game, order, orderResult, addNewOrder, skipThisOrder)
+	if not (order.proxyType == 'GameOrderAttackTransfer' and orderResult.IsSuccessful) then
+		return;
+	end
+
+	local TransferredTerr = game.ServerGame.LatestTurnStanding.Territories[order.To];
+
+	if not territoryHasStructure(TransferredTerr, WL.StructureType.ArmyCache) then
+		return;
+	end
+
+	-- there is a army cache on the territory that was successfully attacked
+	-- so now you can do what you want :p
+
+	ArmyCache(game, addNewOrder, order.To, order.PlayerID);
+
+	if territoryHasStructure(TransferredTerr, WL.StructureType.ResourceCache) then
+		ResourceCache(game, addNewOrder, order.To, order.PlayerID);
+	end
+end
+
+function territoryHasStructure(territory, structureType)
+	return territory.Structures and territory.Structures[structureType];
 end
 
 function ResourceCache(game, addNewOrder, terrID, playerID)
@@ -236,7 +174,7 @@ function ResourceCache(game, addNewOrder, terrID, playerID)
 	end
 
 	local rand = math.random(#cardArray);
-	local randomCard = cardArray[rand]; --picks random card to give to player
+	local randomCard = cardArray[rand]; -- picks random card to give to player
 	local pieces = Mod.Settings.cPieces;
 
 	if Mod.Settings.FixedPieces == false then
@@ -249,7 +187,7 @@ function ResourceCache(game, addNewOrder, terrID, playerID)
 	print(playerID);
 	print(pieces);
 
-	local cardEvent = WL.GameOrderEvent.Create(playerID, "Claimed a card cache and received " .. pieces .. " pieces for a random card", {}, {terrMod}, {}, {});
+	local cardEvent = WL.GameOrderEvent.Create(playerID, 'Claimed a card cache and received ' .. pieces .. ' pieces for a random card', {}, {terrMod}, {}, {});
 
 	t1[randomCard] = pieces;
 	t2[playerID] = t1;
@@ -273,7 +211,9 @@ function ArmyCache(game, addNewOrder, terrID, playerID)
 		IncomeAmount = IncomeAmount + math.random(-luck, luck);
 	end
 
-	addNewOrder(WL.GameOrderEvent.Create(playerID, "Updated income", {}, {terrMod}, {}, {WL.IncomeMod.Create(playerID, IncomeAmount, "You have captured an army cache")}));
+	local incomeMod = WL.IncomeMod.Create(playerID, IncomeAmount, 'You have captured an army cache');
+
+	addNewOrder(WL.GameOrderEvent.Create(playerID, 'Updated income', {}, {terrMod}, {}, {incomeMod}));
 end
 
 function Village(game, addNewOrder, terrID, playerID)
@@ -293,7 +233,7 @@ function Village(game, addNewOrder, terrID, playerID)
 		end
 	end
 
-	addNewOrder(WL.GameOrderEvent.Create(playerID, "new territory", {}, list), true);
+	addNewOrder(WL.GameOrderEvent.Create(playerID, 'New territory', {}, list), true);
 end
 
 function getTableLength(t)

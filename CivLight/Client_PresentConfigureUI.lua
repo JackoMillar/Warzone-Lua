@@ -1,25 +1,25 @@
 require('UI');
 
 function Client_PresentConfigureUI(rootParent, rootParent2, rootParent3)
-	initialValueConvert = Mod.Settings.NumToConvert;
-	initialValueArmies = Mod.Settings.SetArmiesTo;
-	initialcheckbox = Mod.Settings.OnlyBaseNeutrals;
+	initialValueConvert = Mod.Settings.NumToConvert or 2;
+	initialValueArmies = Mod.Settings.SetArmiesTo or 2;
+	initialcheckbox = Mod.Settings.OnlyBaseNeutrals or false;
 
-	initialVillages = Mod.Settings.NumOfVillages;
-	ON = Mod.Settings.ONeutrals;
-	GainedArmies = Mod.Settings.Armies;
+	initialVillages = Mod.Settings.NumOfVillages or 3;
+	ON = (Mod.Settings.ONeutrals == nil and true) or Mod.Settings.ONeutrals;
+	GainedArmies = Mod.Settings.Armies;-- FIXME exact setting name used more than once for multiple settings
 
-	initialACaches = Mod.Settings.NumOfACaches;
-	GainedArmies = Mod.Settings.Armies;
-	FixedArmies = Mod.Settings.FixedArmies;
-	difference = Mod.Settings.aLuck;
+	initialACaches = Mod.Settings.NumOfACaches or 3;
+	GainedArmies = Mod.Settings.Armies;-- FIXME exact setting name used more than once for multiple settings
+	FixedArmies = (Mod.Settings.FixedArmies == nil and true) or Mod.Settings.FixedArmies;
+	difference = Mod.Settings.aLuck or 5;
 
-	initialRCaches = Mod.Settings.NumOfRCaches;
-	Pieces = Mod.Settings.cPieces;
-	FixedPieces = Mod.Settings.FixedPieces;
-	difference2 = Mod.Settings.rLuck;
+	initialRCaches = Mod.Settings.NumOfRCaches or 2;
+	Pieces = Mod.Settings.cPieces or 3;
+	FixedPieces = (Mod.Settings.FixedPieces == nil and true) or Mod.Settings.FixedPieces;
+	difference2 = Mod.Settings.rLuck or 3;
 
-	AttackNeutral = Mod.Settings.AttackNeutral;
+	AttackNeutral = (Mod.Settings.AttackNeutral == nil and true) or Mod.Settings.AttackNeutral;
 
 	Init(rootParent);
 	-- initiliase all default values for the inputs
@@ -28,33 +28,21 @@ end
 
 function showMainConfig()
 	DestroyWindow();
-	SetWindow("Main");
+	SetWindow('Main');
 
 	local vert = CreateVert(GetRoot());
 
-	CreateButton(vert).SetText("Expansion+").SetOnClick(showExpansionConfig).SetColor('#00FF8C');
-	CreateButton(vert).SetText("Villages").SetOnClick(showVillagesConfig).SetColor('#00FF8C');
-	CreateButton(vert).SetText("Army-Caches").SetOnClick(showArmyCacheConfig).SetColor('#00FF8C');
-	CreateButton(vert).SetText("Card-Caches").SetOnClick(showCardCacheConfig).SetColor('#00FF8C');
+	CreateButton(vert).SetText('Expansion+').SetOnClick(showExpansionConfig).SetColor('#00FF8C');
+	CreateButton(vert).SetText('Villages').SetOnClick(showVillagesConfig).SetColor('#00FF8C');
+	CreateButton(vert).SetText('Army-Caches').SetOnClick(showArmyCacheConfig).SetColor('#00FF8C');
+	CreateButton(vert).SetText('Card-Caches').SetOnClick(showCardCacheConfig).SetColor('#00FF8C');
 
-	CreateButton(vert).SetText("Misc Features").SetOnClick(showMiscConfig).SetColor('#AC0059');
+	CreateButton(vert).SetText('Misc Features').SetOnClick(showMiscConfig).SetColor('#AC0059');
 end
 
 function showExpansionConfig()
 	DestroyWindow();
-	SetWindow("FreeExpansion");
-
-	if initialValueConvert == nil then
-		initialValueConvert = 2;
-	end
-
-	if initialValueArmies == nil then
-		initialValueArmies = 2;
-	end
-
-	if initialcheckbox == nil then
-		initialcheckbox = false;
-	end
+	SetWindow('FreeExpansion');
 
 	local vert = CreateVert(GetRoot());
 
@@ -77,7 +65,7 @@ function showExpansionConfig()
 	ExpBaseInputField = UI.CreateCheckBox(vert)
 		.SetIsChecked(initialcheckbox);
 
-	CreateButton(GetRoot()).SetText("Return").SetOnClick(saveExpansionConfig).SetColor('#94652E');
+	CreateButton(GetRoot()).SetText('Return').SetOnClick(saveExpansionConfig).SetColor('#94652E');
 end
 
 function saveExpansionConfig()
@@ -89,15 +77,7 @@ end
 
 function showVillagesConfig()
 	DestroyWindow();
-	SetWindow("Villages");
-
-	if initialVillages == nil then
-		initialVillages = 3;
-	end
-
-	if ON == nil then
-		ON = true;
-	end
+	SetWindow('Villages');
 
 	if GainedArmies == nil then
 		GainedArmies = 2;
@@ -105,7 +85,7 @@ function showVillagesConfig()
 
 	local vert = CreateVert(GetRoot());
 
-	UI.CreateLabel(vert).SetText('At the start of the game, "villages" will spawn around the map. Capturing a village will claim all the adjacent territories to your side. These are shown as Idle Mercenary Camps.').SetColor('#606060');
+	UI.CreateLabel(vert).SetText('At the start of the game, 'villages' will spawn around the map. Capturing a village will claim all the adjacent territories to your side. These are shown as Idle Mercenary Camps.').SetColor('#606060');
 	CreateLabel(vert).SetText('you can disable this mod by setting amount to 0.').SetColor('#606060');
 
 	UI.CreateLabel(vert).SetText('Amount of Villages that will be created at the start of the game').SetColor('#23A0FF');
@@ -124,7 +104,7 @@ function showVillagesConfig()
 	ONInputField = UI.CreateCheckBox(vert)
 		.SetIsChecked(ON);
 
-	CreateButton(GetRoot()).SetText("Return").SetOnClick(saveVillageConfig).SetColor('#94652E');
+	CreateButton(GetRoot()).SetText('Return').SetOnClick(saveVillageConfig).SetColor('#94652E');
 end
 
 function saveVillageConfig()
@@ -136,22 +116,10 @@ end
 
 function showArmyCacheConfig()
 	DestroyWindow();
-	SetWindow("Army-Caches");
-
-	if initialACaches == nil then
-		initialACaches = 3;
-	end
+	SetWindow('Army-Caches');
 
 	if GainedArmies == nil then
 		GainedArmies = 5;
-	end
-
-	if FixedArmies == nil then
-		FixedArmies = true;
-	end
-
-	if difference == nil then
-		difference = 5;
 	end
 
 	local vert = CreateVert(GetRoot());
@@ -181,7 +149,7 @@ function showArmyCacheConfig()
 		.SetSliderMaxValue(10)
 		.SetValue(difference);
 
-	CreateButton(GetRoot()).SetText("Return").SetOnClick(saveArmyConfig).SetColor('#94652E');
+	CreateButton(GetRoot()).SetText('Return').SetOnClick(saveArmyConfig).SetColor('#94652E');
 end
 
 function saveArmyConfig()
@@ -194,23 +162,7 @@ end
 
 function showCardCacheConfig()
 	DestroyWindow();
-	SetWindow("Card-Caches");
-
-	if initialRCaches == nil then
-		initialRCaches = 2;
-	end
-
-	if Pieces == nil then
-		Pieces = 3;
-	end
-
-	if FixedPieces == nil then
-		FixedPieces = true;
-	end
-
-	if difference2 == nil then
-		difference2 = 3;
-	end
+	SetWindow('Card-Caches');
 
 	local vert = CreateVert(GetRoot());
 
@@ -239,7 +191,7 @@ function showCardCacheConfig()
 		.SetSliderMaxValue(10)
 		.SetValue(difference2);
 
-	CreateButton(GetRoot()).SetText("Return").SetOnClick(saveCardCacheConfig).SetColor('#94652E');
+	CreateButton(GetRoot()).SetText('Return').SetOnClick(saveCardCacheConfig).SetColor('#94652E');
 end
 
 function saveCardCacheConfig()
@@ -252,11 +204,7 @@ end
 
 function showMiscConfig()     -- 0 parameters!
 	DestroyWindow();          -- Destroys every UI object currently visible
-	SetWindow("Misc");  -- Allows you to do even more advanced shit
-
-	if AttackNeutral == nil then
-		AttackNeutral = true;
-	end
+	SetWindow('Misc');  -- Allows you to do even more advanced shit
 
 	local vert = CreateVert(GetRoot());
 
@@ -265,7 +213,7 @@ function showMiscConfig()     -- 0 parameters!
 	attackNeutralInputField = UI.CreateCheckBox(vert)
 		.SetIsChecked(AttackNeutral);
 
-	CreateButton(GetRoot()).SetText("Return").SetOnClick(saveMiscConfig).SetColor('#94652E');  -- Allows game creators to go back to the previous page
+	CreateButton(GetRoot()).SetText('Return').SetOnClick(saveMiscConfig).SetColor('#94652E');  -- Allows game creators to go back to the previous page
 end
 
 function saveMiscConfig()
@@ -277,8 +225,8 @@ end
 basic template for functions:
 function functionName()     -- 0 parameters!
 	DestroyWindow();          -- Destroys every UI object currently visible
-	SetWindow("WindowName");  -- Allows you to do even more advanced shit
+	SetWindow('WindowName');  -- Allows you to do even more advanced shit
 	-- do here what you want
-	CreateButton(parent).SetText("Return").SetOnClick(previousFunction);  -- Allows game creators to go back to the previous page
+	CreateButton(parent).SetText('Return').SetOnClick(previousFunction);  -- Allows game creators to go back to the previous page
 end
 ]]--

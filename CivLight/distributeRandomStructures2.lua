@@ -24,12 +24,15 @@ function distributeRandomStructures2(standing, structure, amount, payload)
 		if payload.maxPercentage ~= nil then
 			maxPercentage = payload.maxPercentage;
 		end
+
 		if payload.numberOfStructures ~= nil then
 			numberOfStructures = payload.numberOfStructures;
 		end
+
 		if payload.onlyPlaceOnNeutrals ~= nil then
 			onlyPlaceOnNeutrals = payload.onlyPlaceOnNeutrals;
 		end
+
 		if payload.allowMultipleStructures ~= nil then
 			allowMultipleStructures = payload.allowMultipleStructures;
 		end
@@ -63,7 +66,9 @@ function distributeRandomStructures2(standing, structure, amount, payload)
 end
 
 function getTableLength_POI(t)
-	if type(t) ~= type({}) then return 0; end
+	if type(t) ~= type({}) then
+		return 0;
+	end
 
 	local c = 0;
 
