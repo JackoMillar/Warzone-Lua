@@ -3,7 +3,7 @@ require('Utilities');
 function Client_PresentCommercePurchaseUI(rootParent, game, close)
 	Close1 = close;
 	Game = game;
-	
+
 	local vert = UI.CreateVerticalLayoutGroup(rootParent);
 
 	UI.CreateLabel(vert).SetText("each Recruiter is as powerful as 3 army but cost " .. Mod.Settings.CostToBuyRecruiter .. " gold to purchase.  You may have up to " .. Mod.Settings.MaxRecruiters .. ". If a Recruiter survives at the end of the turn it will generate " .. Mod.Settings.NumArmies .." armies on that territory");
@@ -25,7 +25,7 @@ function PurchaseClicked()
 	--We check on the client for player convenience. Another check happens on the server, so even if someone hacks their client and removes this check they still won't be able to go over the max.
 
 	local playerID = Game.Us.ID;
-	
+
 	local numRecruitersAlreadyHave = 0;
 	for _,ts in pairs(Game.LatestStanding.Territories) do
 		if (ts.OwnerPlayerID == playerID) then
@@ -44,10 +44,9 @@ function PurchaseClicked()
 		return;
 	end
 
-	Game.CreateDialog(PresentBuyRecruitersDialog); 
+	Game.CreateDialog(PresentBuyRecruitersDialog);
 	Close1();
 end
-
 
 function PresentBuyRecruitersDialog(rootParent, setMaxSize, setScrollable, game, close)
 	Close2 = close;
@@ -93,7 +92,7 @@ function CompletePurchaseClicked()
 	local payload = 'BuyRecruiter_' .. SelectedTerritory.ID;
 
 	local orders = Game.Orders;
-	table.insert(orders, WL.GameOrderCustom.Create(Game.Us.ID, msg, payload,  { [WL.ResourceType.Gold] = Mod.Settings.CostToBuyRecruiter } ));
+	table.insert(orders, WL.GameOrderCustom.Create(Game.Us.ID, msg, payload, {[WL.ResourceType.Gold] = Mod.Settings.CostToBuyRecruiter}));
 	Game.Orders = orders;
 
 	Close2();
