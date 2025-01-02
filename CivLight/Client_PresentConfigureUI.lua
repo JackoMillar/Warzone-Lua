@@ -85,7 +85,7 @@ function showVillagesConfig()
 
 	local vert = CreateVert(GetRoot());
 
-	UI.CreateLabel(vert).SetText('At the start of the game, 'villages' will spawn around the map. Capturing a village will claim all the adjacent territories to your side. These are shown as Idle Mercenary Camps.').SetColor('#606060');
+	UI.CreateLabel(vert).SetText('At the start of the game, "villages" will spawn around the map. Capturing a village will claim all the adjacent territories to your side. These are shown as Idle Mercenary Camps.').SetColor('#606060');
 	CreateLabel(vert).SetText('you can disable this mod by setting amount to 0.').SetColor('#606060');
 
 	UI.CreateLabel(vert).SetText('Amount of Villages that will be created at the start of the game').SetColor('#23A0FF');
