@@ -7,7 +7,7 @@ function split(str, pat)
 	local s, e, cap = str:find(fpat, 1)
 	while s do
 		if s ~= 1 or cap ~= "" then
-		 table.insert(t,cap)
+		table.insert(t,cap)
 		end
 		last_end = e+1
 		s, e, cap = str:find(fpat, last_end)
@@ -19,7 +19,6 @@ function split(str, pat)
 	return t
 end
 
-
 function map(array, func)
 	local new_array = {}
 	local i = 1;
@@ -29,7 +28,6 @@ function map(array, func)
 	end
 	return new_array
 end
-
 
 function filter(array, func)
 	local new_array = {}
