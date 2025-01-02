@@ -1,3 +1,2 @@
 At the start of the game, "villages" will spawn around the map
 Capturing a village will claim all the adjacent territories to your side
-
