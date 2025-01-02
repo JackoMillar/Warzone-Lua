@@ -1,3 +1,3 @@
-CivLight is an ongoing attempt to mimic other popular strategy games such as Polytopia and Civilisation. Compiled in this modpack are features designed to enhance the vanilla game and provide more strategy and options to the player. 
+CivLight is an ongoing attempt to mimic other popular strategy games such as Polytopia and Civilisation. Compiled in this modpack are features designed to enhance the vanilla game and provide more strategy and options to the player.
 Each mod in this has been redesigned to be more compatible with each other (e.g. the Expansion+ mod can now activate the Village functions).
 If you want to disable an individual feature or setting, or want to know more about it, click on the corresponding buttons below.
