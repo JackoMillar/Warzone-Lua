@@ -1,15 +1,16 @@
 function Client_PresentConfigureUI(rootParent, rootParent2, rootParent3)
 	print(1);
+
 	local initialACaches = Mod.Settings.NumOfACaches;
 	local GainedArmies = Mod.Settings.Armies;
 	local FixedArmies = Mod.Settings.FixedArmies;
 	local difference = Mod.Settings.Luck;
 
-	if initialACaches == nil then
+	if not initialACaches then
 		initialACaches = 2;
 	end
 
-	if GainedArmies == nil then
+	if not GainedArmies then
 		GainedArmies = 5;
 	end
 
@@ -17,7 +18,7 @@ function Client_PresentConfigureUI(rootParent, rootParent2, rootParent3)
 		FixedArmies = true;
 	end
 
-	if difference == nil then
+	if not difference then
 		difference = 5;
 	end
 
@@ -32,13 +33,13 @@ function Client_PresentConfigureUI(rootParent, rootParent2, rootParent3)
 		.SetValue(initialACaches);
 
 	UI.CreateLabel(vert).SetText('Amount of armies that you will get for claiming a cache');
-		numberInputField2 = UI.CreateNumberInputField(vert)
+	numberInputField2 = UI.CreateNumberInputField(vert)
 		.SetSliderMinValue(1)
 		.SetSliderMaxValue(15)
 		.SetValue(GainedArmies);
 
 	UI.CreateLabel(vert).SetText('if checked will only give a fixed amount of armies');
-		booleanInputField = UI.CreateCheckBox(vert)
+	booleanInputField = UI.CreateCheckBox(vert)
 		.SetIsChecked(FixedArmies);
 
 	UI.CreateLabel(vert).SetText('Random +/- limit');
