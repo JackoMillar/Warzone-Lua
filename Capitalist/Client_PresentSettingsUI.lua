@@ -8,5 +8,4 @@ function Client_PresentSettingsUI(rootParent)
 	UI.CreateLabel(vert).SetText('Percentage of income taken away: '.. Mod.Settings.Percentage .. '%');
 
 	UI.CreateLabel(vert).SetText('A Capitalist will always have the same power as 1 army!');
-
 end
