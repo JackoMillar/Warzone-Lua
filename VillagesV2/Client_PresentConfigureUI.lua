@@ -1,33 +1,11 @@
 function Client_PresentConfigureUI(rootParent, rootParent2, rootParent3)
-	local initialVillages = Mod.Settings.NumOfVillages;
-	local ON = Mod.Settings.ONeutrals;
-	local GainedArmies = Mod.Settings.Armies;
-	local dipLimit = Mod.Settings.DiplomatLimit;
-	local capLimit = Mod.Settings.CapitalistLimit;
-	local priLimit = Mod.Settings.PriestLimit;
-	local medLimit = Mod.Settings.MedicLimit;
-
-	if initialVillages == nil then
-		initialVillages = 5;
-	end
-	if ON == nil then
-		ON = true;
-	end
-	if GainedArmies == nil then
-		GainedArmies = 2;
-	end
-	if dipLimit == nil then
-		dipLimit = 3;
-	end
-	if capLimit == nil then
-		capLimit = 3;
-	end
-	if priLimit == nil then
-		priLimit = 2;
-	end
-	if medLimit == nil then
-		medLimit = 1;
-	end
+	local initialVillages = Mod.Settings.NumOfVillages or 5;
+	local ON = (Mod.Settings.ONeutrals == nil and true) or Mod.Settings.ONeutrals;
+	local GainedArmies = Mod.Settings.Armies or 2;
+	local dipLimit = Mod.Settings.DiplomatLimit or 3;
+	local capLimit = Mod.Settings.CapitalistLimit or 3;
+	local priLimit = Mod.Settings.PriestLimit or 2;
+	local medLimit = Mod.Settings.MedicLimit or 1;
 
 	local vert = UI.CreateVerticalLayoutGroup(rootParent);
 	local horz1 = UI.CreateHorizontalLayoutGroup(vert);  --not used
@@ -72,7 +50,4 @@ function Client_PresentConfigureUI(rootParent, rootParent2, rootParent3)
 		.SetSliderMinValue(1)
 		.SetSliderMaxValue(5)
 		.SetValue(medLimit);
-
-
-
 end
