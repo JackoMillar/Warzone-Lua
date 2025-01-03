@@ -1,7 +1,7 @@
---This file contains utility functions that are WarLight-specific.
+-- This file contains utility functions that are WarLight-specific.
 
 function Dump(obj)
-	if obj.proxyType ~= nil then
+	if obj.proxyType then
 		DumpProxy(obj);
 	elseif type(obj) == 'table' then
 		DumpTable(obj);
@@ -9,12 +9,13 @@ function Dump(obj)
 		print('Dump ' .. type(obj));
 	end
 end
+
 function DumpTable(tbl)
-	for k,v in pairs(tbl) do
+	for k, v in pairs(tbl) do
 		print('k = ' .. tostring(k) .. ' (' .. type(k) .. ') ' .. ' v = ' .. tostring(v) .. ' (' .. type(v) .. ')');
 	end
 end
-function DumpProxy(obj)
 
+function DumpProxy(obj)
 	print('type=' .. obj.proxyType .. ' readOnly=' .. tostring(obj.readonly) .. ' readableKeys=' .. table.concat(obj.readableKeys, ',') .. ' writableKeys=' .. table.concat(obj.writableKeys, ','));
 end
