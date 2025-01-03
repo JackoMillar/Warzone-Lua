@@ -7,27 +7,27 @@ function CauseOfDeath(name)
 		name .. " fell out of a plane"
 
 	};
-	local rand = death[math.random(#death)];
-	return rand;
+
+	return death[math.random(#death)];
 end
 
 function gullible(name)
-local gull = {
-	name .. " is gullible",
-	name .. " pressed the big red button, expecting something to happen",
-	"Guess why this is here... because " .. name .. " couldnt keep their hands to themself",
-	name .. " pressed the wrong button, nearly broke the game",
-	name .. " decided to cheat",
-	name .. " is a big cheater, BOOOOOO!!!!",
-	"Today " .. name .. " decided to cheat. Shame on them!",
-	name .. " is never gonna give you up, never gonna let you down, EXCEPT THIS TIME!",
-	name .. " has been caught out trying to cheat, boo them!",
-	"Ive got nothing to say " .. name .." except im disappointed in you",
-	"HEY ".. name .." how did you get into the admin menu?",
-	"Stop trying to access the admin menu " .. name .. "! Im always watching... always"
-};
-	local rand = gull[math.random(#gull)];
-	return rand;
+	local gull = {
+		name .. " is gullible",
+		name .. " pressed the big red button, expecting something to happen",
+		"Guess why this is here... because " .. name .. " couldnt keep their hands to themself",
+		name .. " pressed the wrong button, nearly broke the game",
+		name .. " decided to cheat",
+		name .. " is a big cheater, BOOOOOO!!!!",
+		"Today " .. name .. " decided to cheat. Shame on them!",
+		name .. " is never gonna give you up, never gonna let you down, EXCEPT THIS TIME!",
+		name .. " has been caught out trying to cheat, boo them!",
+		"Ive got nothing to say " .. name .." except im disappointed in you",
+		"HEY ".. name .." how did you get into the admin menu?",
+		"Stop trying to access the admin menu " .. name .. "! Im always watching... always"
+	};
+
+	return gull[math.random(#gull)];
 end
 
 function advert()
@@ -97,6 +97,6 @@ function advert()
 		"Experience WW3 allover again in the WZ Classic app under Open Games",
 		"Top story: Warzone denies allegations of banning those worshiping Activision, counter claim sent"
 	};
-	local rand = adverts[math.random(#adverts)];
-	return rand
+
+	return adverts[math.random(#adverts)];
 end
