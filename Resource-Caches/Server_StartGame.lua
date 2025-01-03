@@ -3,14 +3,17 @@ require('WLUtilities');
 require('distributeRandomStructures');
 
 function Server_StartGame(game, standing)
+	local hasCards = false;
 
-	local count = 0;
-	for cardID, _ in pairs(game.Settings.Cards) do
-		count = count + 1;
+	for _ in pairs(game.Settings.Cards) do
+		hasCards = true;
+		break;
 	end
-	if count > 0 then
+
+	if hasCards then
 		distributeRandomStructures(standing, WL.StructureType.ResourceCache, Mod.Settings.NumOfRCaches, {maxPercentage = 50, numberOfStructures = 1, onlyPlaceOnNeutrals = true, allowMultipleStructures = false});
 	end
+
 --	local s = standing;
 --	local cards = s.Cards;
 --	local armies = 0;
