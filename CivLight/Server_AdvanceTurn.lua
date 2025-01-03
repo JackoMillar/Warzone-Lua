@@ -23,13 +23,14 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	for terrID, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		if not territoriy.IsNeutral then
 			for connID, _ in pairs(territory.ConnectedTo) do
-				local connectedTerr =  game.ServerGame.LatestTurnStanding.Territories[connID];
+				local connectedTerritory =  game.ServerGame.LatestTurnStanding.Territories[connID];
+				local connectedTerritoryIsNeutral = connectedTerritory.OwnerPlayerID == WL.PlayerID.Neutral;
 
 				if (
-					connectedTerr.OwnerPlayerID == WL.PlayerID.Neutral and
-					((onlyBaseNeutrals and connectedTerr.NumArmies.NumArmies <= nonDistArmies) or true)
+					(onlyBaseNeutrals and connectedTerritoryIsNeutral and connectedTerritory.NumArmies.NumArmies <= nonDistArmies) or
+					(not onlyBaseNeutrals and connectedTerritoryIsNeutral)
 				) then
-					table.insert(t[connectedTerr.OwnerPlayerID], connID);
+					table.insert(t[connectedTerritory.OwnerPlayerID], connID);
 				end
 			end
 		end
@@ -64,9 +65,9 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 					--playerID = p;
 					--ArmyCache(game, addNewOrder, randomNeutralTerrId, playerID);
 				--end
-			end
 
-			--addNewOrder(WL.GameOrderEvent.Create(p, 'New territory', {}, {terrMod}), true));
+				--addNewOrder(WL.GameOrderEvent.Create(p, 'New territory', {}, {terrMod}), true));
+			end
 
 			table.remove(arr, rand);
 		end
