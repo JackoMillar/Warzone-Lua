@@ -62,7 +62,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	while addedOrders do
 		addedOrders = false;
 
-		for p, _  in pairs(game.Game.PlayingPlayers) do
+		for p, _ in pairs(game.Game.PlayingPlayers) do
 			if pTable[p][i] ~= nil then
 				addedOrders = true;
 				addNewOrder(pTable[p][i]);
