@@ -17,59 +17,47 @@ function distributeRandomStructures(standing, structure, amount, payload)
 --      * mapDetails                (default = nil)
 --  Example table: {maxPercentage = 50, numberOfStructures = 1, onlyPlaceOnNeutrals = true, allowMultipleStructures = false, AllowConnectedTerrs = true}
 
-	local maxPercentage = 50;
-	local numberOfStructures = 1;
-	local onlyPlaceOnNeutrals = true;
-	local allowMultipleStructures = false;
-	local allowConnectedTerrs = true;
-	local mapDetails = nil;
-
-	VillageAmount =  Mod.Settings.NumOfVillages;
-
-	if payload ~= nil then
-		if type(payload) == type({}) then
-			if payload.maxPercentage ~= nil then
-				maxPercentage = payload.maxPercentage;
-			end
-			if payload.numberOfStructures ~= nil then
-				numberOfStructures = payload.numberOfStructures;
-			end
-			if payload.onlyPlaceOnNeutrals ~= nil then
-				onlyPlaceOnNeutrals = payload.onlyPlaceOnNeutrals;
-			end
-			if payload.allowMultipleStructures ~= nil then
-				allowMultipleStructures = payload.allowMultipleStructures;
-			end
-			if payload.allowConnectedTerrs ~= nil then
-				allowConnectedTerrs = payload.allowConnectedTerrs;
-				mapDetails = payload.mapDetails;
-			end
-		end
+	if type(payload) ~= 'table' then
+		payload = {};
 	end
+
+	local maxPercentage = payload.maxPercentage or 50;
+	local numberOfStructures = payload.numberOfStructures or 1;
+	local onlyPlaceOnNeutrals = (payload.onlyPlaceOnNeutrals == nil and true) or payload.onlyPlaceOnNeutrals;
+	local allowMultipleStructures = not not payload.allowMultipleStructures;
+	local allowConnectedTerrs = (payload.allowConnectedTerrs == nil and true) or payload.allowConnectedTerrs;
+	local mapDetails = payload.mapDetails;
 
 	local terrArray = {};
 	local terrCount = 0;
+
 	for _, terr in pairs(standing.Territories) do
 		terrCount = terrCount + 1;
+
 		if (not onlyPlaceOnNeutrals or terr.IsNeutral) and (not allowMultipleStructures or getTableLength_POI(terr.Structures) < 1) then
 			table.insert(terrArray, terr.ID);
 		end
 	end
 
-	VillageAmount = math.min(#terrArray, VillageAmount)
+	local VillageAmount = math.min(#terrArray, Mod.Settings.NumOfVillages);
+
 	if VillageAmount / terrCount > maxPercentage / 100 then
 		VillageAmount = math.floor(VillageAmount - ((VillageAmount / terrCount - maxPercentage / 100) * terrCount));
 	end
 
 	for i = 1, VillageAmount do
-		if #terrArray < 1 then break; end
+		if #terrArray < 1 then
+			break;
+		end
+
 		local rand = math.random(#terrArray);
 		local terr = terrArray[rand];
-		local structures = standing.Territories[terr].Structures
-		if structures == nil then structures = {}; end
+		local structures = standing.Territories[terr].Structures or {};
+
 		structures[structure] = numberOfStructures;
-		standing.Territories[terr].Structures = structures
+		standing.Territories[terr].Structures = structures;
 		table.remove(terrArray, rand);
+
 		if not allowConnectedTerrs then
 			terrArray = removeConnectedTerrs_POI(mapDetails, terrArray, terr);
 		end
@@ -77,21 +65,32 @@ function distributeRandomStructures(standing, structure, amount, payload)
 end
 
 function removeConnectedTerrs_POI(map, terrs, terr)
-	if terr == nil then return terrs; end
+	if not terr then
+		return terrs;
+	end
+
 	for i, _ in pairs(map.Territories[terr].ConnectedTo) do
-		if getKeyFromValue_POI(terrs, i) ~= nil then
-			table.remove(terrs, getKeyFromValue_POI(terrs, i));
+		local index = getKeyFromValue_POI(terrs, i);
+
+		if index then
+			table.remove(terrs, index);
 		end
 	end
+
 	return terrs;
 end
 
 function getTableLength_POI(t)
-	if type(t) ~= type({}) then return 0; end
+	if type(t) ~= type({}) then
+		return 0;
+	end
+
 	local c = 0;
+
 	for _, _ in pairs(t) do
 		c = c + 1;
 	end
+
 	return c;
 end
 
@@ -101,5 +100,4 @@ function getKeyFromValue_POI(t, v)
 			return i;
 		end
 	end
-	return nil;
 end
