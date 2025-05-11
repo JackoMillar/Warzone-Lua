@@ -5,26 +5,25 @@ function Server_AdvanceTurn_End(game, addNewOrder)
         playerTerrs[p] = {};
     end
 
-    for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
-        if terr.OwnerPlayerID ~= WL.PlayerID.Neutral then
-            -- you should make it so only territories without special units can be lost imo
+   for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
+    if terr.OwnerPlayerID ~= WL.PlayerID.Neutral then
+        if #terr.NumArmies.SpecialUnits == 0 then  -- Ignore if it has special units
             local numArmies = terr.NumArmies.NumArmies
-            local index = 0;
+            local index = 0
             for i, terr2 in pairs(playerTerrs[terr.OwnerPlayerID]) do
                 if game.ServerGame.LatestTurnStanding.Territories[terr2].NumArmies.NumArmies > numArmies then
-                    index = i;
-		    print(100);
-                    break;
+                    index = i
+                    break
                 end
             end
             if index == 0 then
-                index = #playerTerrs[terr.OwnerPlayerID] + 1;
-	    end
-	  
-            table.insert(playerTerrs[terr.OwnerPlayerID], index, terr.ID);
-	    
+                index = #playerTerrs[terr.OwnerPlayerID] + 1
+            end
+            table.insert(playerTerrs[terr.OwnerPlayerID], index, terr.ID)
         end
     end
+end
+
 
     -- Now playerTerrs is a table with as key a PlayerID and as value a sorted array, with at index 1 the one with the most armies and the last index the terr with the least
 
