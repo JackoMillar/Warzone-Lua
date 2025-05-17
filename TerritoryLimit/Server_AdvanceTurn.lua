@@ -7,7 +7,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 
    for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
     if terr.OwnerPlayerID ~= WL.PlayerID.Neutral then
-        if terr.NumArmies.SpecialUnits == 0 then  -- Ignore if it has special units
+        if #terr.NumArmies.SpecialUnits == 0 then  -- Ignore if it has special units
             local numArmies = terr.NumArmies.NumArmies
             local index = 0
             for i, terr2 in pairs(playerTerrs[terr.OwnerPlayerID]) do
